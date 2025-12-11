@@ -5,7 +5,7 @@ import (
 	"math"
 	"reflect"
 
-	. "github.com/cdvelop/tinystring"
+	. "github.com/tinywasm/fmt"
 )
 
 // Note: decoder pool is now managed by TinyBin instance

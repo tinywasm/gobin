@@ -3,7 +3,7 @@ package tinybin
 import (
 	"reflect"
 
-	. "github.com/cdvelop/tinystring"
+	. "github.com/tinywasm/fmt"
 )
 
 // Note: Global schemas map removed - now using instance-based caching in TinyBin

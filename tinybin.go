@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"sync"
 
-	. "github.com/cdvelop/tinystring"
+	. "github.com/tinywasm/fmt"
 )
 
 // TinyBin represents a binary encoder/decoder with isolated state.
