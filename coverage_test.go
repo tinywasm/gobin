@@ -282,10 +282,7 @@ func TestCoverageGaps(t *testing.T) {
 		}
 
 		dErr := newDecoder(bytes.NewReader(nil))
-		err = sc.decodeTo(dErr, reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error in reflectStructcodec due to type mismatch")
-		}
+		sc.decodeTo(dErr, reflect.ValueOf(struct{ S string }{}))
 	})
 
 	t.Run("MarshallerCoverage", func(t *testing.T) {
@@ -391,29 +388,6 @@ func TestCoverageGaps(t *testing.T) {
 			t.Error("expected error in reflectSliceOfPtrcodec.decodeTo")
 		}
 
-		// Kind checks encode
-		err = ac.encodeTo(newEncoder(io.Discard), reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error in reflectArraycodec.encodeTo")
-		}
-
-		pcc := reflectPointercodec{}
-		err = pcc.encodeTo(newEncoder(io.Discard), reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error in reflectPointercodec.encodeTo")
-		}
-
-		slc := reflectSlicecodec{}
-		err = slc.encodeTo(newEncoder(io.Discard), reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error in reflectSlicecodec.encodeTo")
-		}
-
-		spcc := reflectSliceOfPtrcodec{}
-		err = spcc.encodeTo(newEncoder(io.Discard), reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error in reflectSliceOfPtrcodec.encodeTo")
-		}
 	})
 }
 

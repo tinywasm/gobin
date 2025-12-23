@@ -92,9 +92,9 @@ func scanType(t reflect.Type) (codec, error) {
 		case reflect.Bool:
 			return new(boolSlicecodec), nil
 		case reflect.Uint, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			return new(varuintSlicecodec), nil
+			return &numericSlicecodec{signed: false}, nil
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			return new(varintSlicecodec), nil
+			return &numericSlicecodec{signed: true}, nil
 		case reflect.Ptr:
 			elemElem := elem.Elem()
 			elemcodec, err := scanType(elemElem)

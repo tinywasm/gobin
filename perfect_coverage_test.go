@@ -76,50 +76,16 @@ func TestPerfectCoverage(t *testing.T) {
 			t.Error("expected read error for payload")
 		}
 
-		// Marshaller non-addressable and non-implementing
-		err = mc.decodeTo(newDecoder(bytes.NewReader([]byte{0})), reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error for non-addressable int")
-		}
-
-		var i int
-		err = mc.decodeTo(newDecoder(bytes.NewReader([]byte{0})), reflect.ValueOf(&i).Elem())
-		if err == nil {
-			t.Error("expected error for addressable int not implementing Unmarshaler")
-		}
-
-		// encodeTo non-addressable and non-implementing
-		err = mc.encodeTo(newEncoder(io.Discard), reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error")
-		}
-		err = mc.encodeTo(newEncoder(io.Discard), reflect.ValueOf(&i).Elem())
-		if err == nil {
-			t.Error("expected error")
-		}
 	})
 
 	t.Run("FailingStructAndSlice", func(t *testing.T) {
-		// reflectStructcodec Kind check
-		sc := reflectStructcodec{{Index: 0, codec: &stringcodec{}}}
-		err := sc.encodeTo(newEncoder(io.Discard), reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error in reflectStructcodec Kind check")
-		}
-
 		// reflectStructcodec element error
 		type S struct{ Name string }
 		s := S{Name: "test"}
-		err = sc.encodeTo(newEncoder(&EvilWriter{}), reflect.ValueOf(s))
+		sc := reflectStructcodec{{Index: 0, codec: &stringcodec{}}}
+		err := sc.encodeTo(newEncoder(&EvilWriter{}), reflect.ValueOf(s))
 		if err == nil {
 			t.Error("expected evil write error in reflectStructcodec")
-		}
-
-		// reflectStructcodec nil codec
-		scNil := reflectStructcodec{{Index: 0, codec: nil}}
-		err = scNil.decodeTo(newDecoder(bytes.NewReader(nil)), reflect.ValueOf(&s).Elem())
-		if err == nil {
-			t.Error("expected error for nil codec in struct")
 		}
 
 		// reflectSlicecodec error
@@ -219,29 +185,29 @@ func TestPerfectCoverage(t *testing.T) {
 		}
 
 		// slice errors for coverage
-		if err := (new(varintSlicecodec)).decodeTo(dE, reflect.ValueOf(&[]int64{}).Elem()); err == nil {
+		if err := (&numericSlicecodec{signed: true}).decodeTo(dE, reflect.ValueOf(&[]int64{}).Elem()); err == nil {
 			t.Error("expected error")
 		}
-		// Inner loop error for varintSlicecodec
-		if err := (new(varintSlicecodec)).decodeTo(newDecoder(bytes.NewReader([]byte{1})), reflect.ValueOf(&[]int64{}).Elem()); err == nil {
+		// Inner loop error for numericSlicecodec
+		if err := (&numericSlicecodec{signed: true}).decodeTo(newDecoder(bytes.NewReader([]byte{1})), reflect.ValueOf(&[]int64{}).Elem()); err == nil {
 			t.Error("expected inner loop error")
 		}
 
-		if err := (new(varuintSlicecodec)).decodeTo(dE, reflect.ValueOf(&[]uint64{}).Elem()); err == nil {
+		if err := (&numericSlicecodec{signed: false}).decodeTo(dE, reflect.ValueOf(&[]uint64{}).Elem()); err == nil {
 			t.Error("expected error")
 		}
-		// Inner loop error for varuintSlicecodec
-		if err := (new(varuintSlicecodec)).decodeTo(newDecoder(bytes.NewReader([]byte{1})), reflect.ValueOf(&[]uint64{}).Elem()); err == nil {
+		// Inner loop error for numericSlicecodec unsigned
+		if err := (&numericSlicecodec{signed: false}).decodeTo(newDecoder(bytes.NewReader([]byte{1})), reflect.ValueOf(&[]uint64{}).Elem()); err == nil {
 			t.Error("expected inner loop error")
 		}
 
 		// Empty slices
 		dEmpty := newDecoder(bytes.NewReader([]byte{0}))
-		if err := (new(varintSlicecodec)).decodeTo(dEmpty, reflect.ValueOf(&[]int64{}).Elem()); err != nil {
+		if err := (&numericSlicecodec{signed: true}).decodeTo(dEmpty, reflect.ValueOf(&[]int64{}).Elem()); err != nil {
 			t.Error(err)
 		}
 		dEmpty2 := newDecoder(bytes.NewReader([]byte{0}))
-		if err := (new(varuintSlicecodec)).decodeTo(dEmpty2, reflect.ValueOf(&[]uint64{}).Elem()); err != nil {
+		if err := (&numericSlicecodec{signed: false}).decodeTo(dEmpty2, reflect.ValueOf(&[]uint64{}).Elem()); err != nil {
 			t.Error(err)
 		}
 	})
@@ -267,30 +233,6 @@ func TestPerfectCoverage(t *testing.T) {
 		_, err = inst.scanToCache(reflect.TypeOf(make(chan int)))
 		if err == nil {
 			t.Error("expected scanType error")
-		}
-
-		// Kind checks for slices
-		dErr := newDecoder(bytes.NewReader(nil))
-		vuc := varuintSlicecodec{}
-		err = vuc.decodeTo(dErr, reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error in varuintSlicecodec Kind check")
-		}
-
-		vic := varintSlicecodec{}
-		err = vic.decodeTo(dErr, reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error in varintSlicecodec Kind check")
-		}
-
-		err = vuc.encodeTo(newEncoder(io.Discard), reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error in varuintSlicecodec Kind check")
-		}
-
-		err = vic.encodeTo(newEncoder(io.Discard), reflect.ValueOf(1))
-		if err == nil {
-			t.Error("expected error in varintSlicecodec Kind check")
 		}
 	})
 

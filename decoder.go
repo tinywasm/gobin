@@ -12,8 +12,9 @@ import (
 
 // decoder represents a binary decoder.
 type decoder struct {
-	reader reader
-	tb     *instance // Reference to the instance for schema caching
+	scratch [10]byte
+	reader  reader
+	tb      *instance // Reference to the instance for schema caching
 }
 
 // newDecoder creates a binary decoder.
@@ -112,9 +113,19 @@ func (d *decoder) readBool() (bool, error) {
 
 // readString a string prefixed with a variable-size integer size.
 func (d *decoder) readString() (out string, err error) {
-	var b []byte
-	if b, err = d.readSlice(); err == nil {
-		out = string(b)
+	var l uint64
+	if l, err = d.readUvarint(); err == nil && l > 0 {
+		var b []byte
+		if l <= 10 {
+			b = d.scratch[:l]
+			if _, err = d.read(b); err == nil {
+				out = string(b)
+			}
+		} else {
+			if b, err = d.slice(int(l)); err == nil {
+				out = string(b)
+			}
+		}
 	}
 	return
 }
