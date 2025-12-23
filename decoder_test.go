@@ -1,4 +1,4 @@
-package gobin
+package binary
 
 import (
 	"io"

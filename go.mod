@@ -1,4 +1,4 @@
-module github.com/tinywasm/gobin
+module github.com/tinywasm/binary
 
 go 1.25.2
 

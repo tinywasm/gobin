@@ -1,4 +1,4 @@
-package gobin
+package binary
 
 import (
 	"io"
@@ -8,15 +8,15 @@ import (
 	. "github.com/tinywasm/fmt"
 )
 
-// Note: decoder pool is now managed by GoBin instance
+// Note: decoder pool is now managed by Binary instance
 
 // decoder represents a binary decoder.
 type decoder struct {
 	reader reader
-	tb     *GoBin // Reference to the GoBin instance for schema caching
+	tb     *Binary // Reference to the Binary instance for schema caching
 }
 
-// NewDecoder creates a binary decoder (deprecated - use GoBin instance methods).
+// NewDecoder creates a binary decoder (deprecated - use Binary instance methods).
 func NewDecoder(r io.Reader) *decoder {
 	return &decoder{
 		reader: newReader(r),
@@ -138,7 +138,7 @@ func (d *decoder) ReadSlice() (b []byte, err error) {
 }
 
 // Reset resets the decoder and makes it ready to be reused.
-func (d *decoder) Reset(data []byte, tb *GoBin) {
+func (d *decoder) Reset(data []byte, tb *Binary) {
 	if d.reader == nil {
 		d.reader = newSliceReader(data)
 	} else {
@@ -147,12 +147,12 @@ func (d *decoder) Reset(data []byte, tb *GoBin) {
 	d.tb = tb
 }
 
-// scanToCache scans the type and caches it in the GoBin instance
+// scanToCache scans the type and caches it in the Binary instance
 func (d *decoder) scanToCache(t reflect.Type) (Codec, error) {
 	if d.tb == nil {
-		return nil, Err("decoder", "scanToCache", "GoBin", "nil")
+		return nil, Err("decoder", "scanToCache", "Binary", "nil")
 	}
 
-	// Use the GoBin instance's schema caching mechanism
+	// Use the Binary instance's schema caching mechanism
 	return d.tb.scanToCache(t)
 }

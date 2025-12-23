@@ -1,4 +1,4 @@
-package gobin
+package binary
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ var testMsg = msg{
 }
 
 // Test_Full removed - uses map[string]column which is not supported
-// Maps are intentionally not supported in GoBin for WebAssembly optimization
+// Maps are intentionally not supported in Binary for WebAssembly optimization
 // Use slice of structs instead: []struct{Key string; Value column}
 /*
 func Test_Full(t *testing.T) {

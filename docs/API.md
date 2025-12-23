@@ -1,46 +1,46 @@
-# GoBin API Reference
+# Binary API Reference
 
 ## Core API
 
 ### Encoding Functions
 
-#### `(*GoBin) Encode(v any) ([]byte, error)`
+#### `(*Binary) Encode(v any) ([]byte, error)`
 Encodes any value into binary format and returns the resulting bytes.
 
 ```go
-tb := gobin.New()
+tb := binary.New()
 data, err := tb.Encode(myStruct)
 ```
 
-#### `(*GoBin) EncodeTo(v any, dst io.Writer) error`
+#### `(*Binary) EncodeTo(v any, dst io.Writer) error`
 Encodes a value directly to an `io.Writer`.
 
 ```go
-tb := gobin.New()
+tb := binary.New()
 var buf bytes.Buffer
 err := tb.EncodeTo(myStruct, &buf)
 ```
 
 ### Decoding Functions
 
-#### `(*GoBin) Decode(b []byte, v any) error`
+#### `(*Binary) Decode(b []byte, v any) error`
 Decodes binary data into a value. The destination must be a pointer.
 
 ```go
-tb := gobin.New()
+tb := binary.New()
 var result MyStruct
 err := tb.Decode(data, &result)
 ```
 
 ### encoder Type
 
-**Note**: Encoders are now managed internally by GoBin instances through object pooling for better performance and resource management. Direct creation of encoders is deprecated.
+**Note**: Encoders are now managed internally by Binary instances through object pooling for better performance and resource management. Direct creation of encoders is deprecated.
 
 #### `(*encoder) Encode(v any) error`
 Encodes a value using the encoder instance.
 
 ```go
-tb := gobin.New()
+tb := binary.New()
 var buffer bytes.Buffer
 err := tb.EncodeTo(myValue, &buffer) // Uses pooled encoder internally
 ```
@@ -49,7 +49,7 @@ err := tb.EncodeTo(myValue, &buffer) // Uses pooled encoder internally
 Returns the underlying writer.
 
 ```go
-tb := gobin.New()
+tb := binary.New()
 var buffer bytes.Buffer
 tb.EncodeTo(myValue, &buffer)
 writer := buffer // Direct access to buffer
@@ -72,13 +72,13 @@ The `encoder` type provides methods for writing primitive types:
 
 ### decoder Type
 
-**Note**: Decoders are now managed internally by GoBin instances through object pooling for better performance and resource management. Direct creation of decoders is deprecated.
+**Note**: Decoders are now managed internally by Binary instances through object pooling for better performance and resource management. Direct creation of decoders is deprecated.
 
-#### `(*GoBin) Decode(data []byte, v any) error`
-Decodes binary data into a value using the GoBin instance. The destination must be a pointer.
+#### `(*Binary) Decode(data []byte, v any) error`
+Decodes binary data into a value using the Binary instance. The destination must be a pointer.
 
 ```go
-tb := gobin.New()
+tb := binary.New()
 var result MyStruct
 err := tb.Decode(data, &result)
 ```
@@ -100,26 +100,26 @@ The `decoder` type provides methods for reading primitive types:
 - `Slice(n int) ([]byte, error)` - returns a slice of the next n bytes
 - `ReadSlice() ([]byte, error)` - reads a variable-length byte slice
 
-## GoBin Constructor and Instance Architecture
+## Binary Constructor and Instance Architecture
 
 ### Creating Instances
 
-#### `New(args ...any) *GoBin`
-Creates a new GoBin instance with optional configuration. Each instance is completely isolated from others.
+#### `New(args ...any) *Binary`
+Creates a new Binary instance with optional configuration. Each instance is completely isolated from others.
 
 ```go
 // Basic instance (no logging)
-tb := gobin.New()
+tb := binary.New()
 
 // With custom logging
-tb := gobin.New(func(msg ...any) {
-    log.Printf("GoBin: %v", msg)
+tb := binary.New(func(msg ...any) {
+    log.Printf("Binary: %v", msg)
 })
 ```
 
 ### Instance Isolation Benefits
 
-**Complete State Isolation**: Each GoBin instance maintains its own:
+**Complete State Isolation**: Each Binary instance maintains its own:
 - Schema cache (slice-based for TinyGo compatibility)
 - encoder and decoder object pools
 - Optional logging function
@@ -131,8 +131,8 @@ tb := gobin.New(func(msg ...any) {
 ```go
 func TestMyFunction(t *testing.T) {
     // Completely isolated test instance
-    tb := gobin.New(func(msg ...any) {
-        t.Logf("GoBin: %v", msg)
+    tb := binary.New(func(msg ...any) {
+        t.Logf("Binary: %v", msg)
     })
 
     data, err := tb.Encode(testData)

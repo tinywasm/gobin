@@ -4,9 +4,9 @@
 
 ```go
 // Create multiple isolated instances
-httpTB := gobin.New()
-grpcTB := gobin.New()
-kafkaTB := gobin.New()
+httpTB := binary.New()
+grpcTB := binary.New()
+kafkaTB := binary.New()
 
 // Each instance maintains its own cache and pools
 httpData, _ := httpTB.Encode(data)
@@ -18,8 +18,8 @@ kafkaData, _ := kafkaTB.Encode(data)
 
 ```go
 // Create instance with custom logging for debugging
-tb := gobin.New(func(msg ...any) {
-    log.Printf("GoBin Debug: %v", msg)
+tb := binary.New(func(msg ...any) {
+    log.Printf("Binary Debug: %v", msg)
 })
 
 // Use like normal
@@ -32,7 +32,7 @@ if err != nil {
 ## Concurrent Usage
 
 ```go
-tb := gobin.New()
+tb := binary.New()
 
 // Safe concurrent usage - internal pooling handles synchronization
 go func() {
@@ -49,7 +49,7 @@ go func() {
 ## Error Handling
 
 ```go
-tb := gobin.New()
+tb := binary.New()
 
 data, err := tb.Encode(myValue)
 if err != nil {
@@ -71,16 +71,16 @@ if err != nil {
 
 ```go
 type ProtocolManager struct {
-    httpGoBin  *gobin.GoBin
-    grpcGoBin  *gobin.GoBin
-    kafkaGoBin *gobin.GoBin
+    httpBinary  *binary.Binary
+    grpcBinary  *binary.Binary
+    kafkaBinary *binary.Binary
 }
 
 func NewProtocolManager() *ProtocolManager {
     return &ProtocolManager{
-        httpGoBin:  gobin.New(), // Production: no logging
-        grpcGoBin:  gobin.New(),
-        kafkaGoBin: gobin.New(),
+        httpBinary:  binary.New(), // Production: no logging
+        grpcBinary:  binary.New(),
+        kafkaBinary: binary.New(),
     }
 }
 ```
@@ -90,13 +90,13 @@ func NewProtocolManager() *ProtocolManager {
 ```go
 // Each goroutine gets its own instance for complete isolation
 go func() {
-    tb := gobin.New()
+    tb := binary.New()
     data, _ := tb.Encode(data1)
     process(data)
 }()
 
 go func() {
-    tb := gobin.New()
+    tb := binary.New()
     data, _ := tb.Encode(data2) // Completely independent
     process(data)
 }()

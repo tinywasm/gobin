@@ -1,4 +1,4 @@
-package gobin
+package binary
 
 import (
 	"testing"
@@ -35,7 +35,7 @@ func TestReader_Slice(t *testing.T) {
 // 	}
 // }
 
-// TestStreamReader and bigStruct commented out since it uses maps, which are not supported in GoBin.
+// TestStreamReader and bigStruct commented out since it uses maps, which are not supported in Binary.
 // func TestStreamReader(t *testing.T) {
 // 	input := newBigStruct()
 // 	tb := New()

@@ -1,6 +1,6 @@
 # Supported Data Types
 
-GoBin automatically handles encoding and decoding for the following types:
+Binary automatically handles encoding and decoding for the following types:
 
 ## Primitive Types
 - `bool` - encoded as a single byte (0 or 1)
