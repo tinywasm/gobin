@@ -178,10 +178,13 @@ func scanStruct(t reflect.Type) *scannedStruct {
 		field := t.Field(i)
 
 		// Get field name
-		if field.Name != "_" {
+		if HasUpperPrefix(field.Name) {
 			// Check if field should be skipped
-			tag := field.Tag
-			if tag.Get("binary") != "-" {
+			tag := Convert(string(field.Tag))
+			jsonTag, _ := tag.TagValue("json")
+			binaryTag, _ := tag.TagValue("binary")
+
+			if jsonTag != "-" && binaryTag != "-" {
 				meta.fields = append(meta.fields, i)
 			}
 		}
